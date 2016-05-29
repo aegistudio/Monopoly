@@ -17,7 +17,11 @@ public class QueryBuilder {
 			(column) -> column.getAnnotation(AutoIncrement.class) == null;
 	
 	public void addFieldEquals(Relation table, Predicate<Column> fieldSelector) {
-		String result = new ListBuilder<Column>(" and ", 
+		this.addFieldEquals(table, " and ", fieldSelector);
+	}
+	
+	public void addFieldEquals(Relation table, String delimeter, Predicate<Column> fieldSelector) {
+		String result = new ListBuilder<Column>(delimeter, 
 				c -> fieldSelector.test(c)? c.getName() + "={" + c.getName() + "}" : null)
 		.build(table.fieldMap.values());
 		this.add(result);

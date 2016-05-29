@@ -14,7 +14,7 @@ public class UpdateKeywordQuery extends QueryBuilder {
 		super.add("update ");
 		super.add(table.getName());
 		super.add(" set ");
-		super.addFieldEquals(table, updated);
+		super.addFieldEquals(table, ", ", updated);
 		super.add(" where ");
 		super.addFieldEquals(table, select);
 	}
