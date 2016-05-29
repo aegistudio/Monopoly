@@ -66,4 +66,11 @@ public class PackScheme {
 			return statement.getGeneratedKeys();
 		}
 	}
+	
+	public int executeUpdate(Object... o) throws SQLException {
+		synchronized(this.statement) {
+			this.pack(o);
+			return statement.executeUpdate();
+		}
+	}
 }

@@ -9,7 +9,6 @@ import net.aegistudio.monopoly.map.ColumnMapPolicy;
 import net.aegistudio.monopoly.map.MappingPolicy;
 import net.aegistudio.monopoly.map.PackScheme;
 import net.aegistudio.monopoly.map.UnpackScheme;
-import net.aegistudio.monopoly.query.InsertSingleQuery;
 
 /**
  * The basic insert transation.
@@ -22,10 +21,9 @@ public class InsertTransation {
 	MappingPolicy columnMap;
 	PackScheme insertPack;
 	UnpackScheme insertUnpack;
-	public InsertTransation(Relation relation) throws SQLException {
+	public InsertTransation(Relation relation, String query) throws SQLException {
 		this.columnMap = new ColumnMapPolicy(relation);
-		InsertSingleQuery insertSingle = new InsertSingleQuery(relation);
-		insertPack = new PackScheme(relation.database, insertSingle.getQuery(), columnMap) {
+		insertPack = new PackScheme(relation.database, query, columnMap) {
 			public PreparedStatement createStatement(String name) throws SQLException {
 				return super.database.connection.prepareStatement(name, 
 						PreparedStatement.RETURN_GENERATED_KEYS);
@@ -33,10 +31,12 @@ public class InsertTransation {
 		};
 	}
 	
-	public void insert(Object object) throws SQLException {
+	public boolean insert(Object object) throws SQLException {
 		ResultSet result = insertPack.executeInsert(object);
 		if(insertUnpack == null) 
 			insertUnpack = new UnpackScheme(result.getMetaData(), columnMap);
-		if(result.next()) insertUnpack.unpack(result, object);
+		if(!result.next()) return false;
+		insertUnpack.unpack(result, object);
+		return true;
 	}
 }

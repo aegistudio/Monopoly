@@ -45,14 +45,17 @@ public class Database {
 		return relation;
 	}
 	
-	public Relation getRelationComplete(Class<?> clazz) {
-		Relation relation = this.getRelation(clazz);
+
+	public static interface SQLCallable<T> {	public T apply(Relation relation) throws SQLException;	}
+	protected <T> T getRelationComplete(Object object, SQLCallable<T> todo) throws SQLException {
+		Relation relation = this.getRelation(object.getClass());
 		if(relation == null)
 			throw new RuntimeException("The provided entity has not yet been registered!");
 		if(relation.defaultStatements == null)
 			throw new RuntimeException("This table may have unresolved dependency!");
-		return relation;
+		return todo.apply(relation);
 	}
+	
 	
 	public void create() throws SQLException {
 		boolean removeTable;
@@ -75,8 +78,23 @@ public class Database {
 		while(removeTable);
 	}
 	
-	public void insert(Object entity) throws SQLException {
-		Relation relation = this.getRelationComplete(entity.getClass());
-		relation.defaultStatements.insert.insert(entity);
+	public boolean insert(Object entity) throws SQLException {
+		return this.getRelationComplete(entity, relation ->
+			relation.defaultStatements.insert.insert(entity));
+	}
+	
+	public boolean find(Object entity) throws SQLException {
+		return this.getRelationComplete(entity, relation ->
+			relation.defaultStatements.find.find(entity));
+	}
+	
+	public boolean update(Object entity) throws SQLException {
+		return this.getRelationComplete(entity, relation ->
+			relation.defaultStatements.update.update(entity));
+	}
+	
+	public boolean delete(Object entity) throws SQLException {
+		return this.getRelationComplete(entity, relation ->
+			relation.defaultStatements.delete.update(entity));
 	}
 }
