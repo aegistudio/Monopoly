@@ -15,7 +15,7 @@ public class UpdateTransation {
 		updatePack = new PackScheme(relation.database, query, columnMap);
 	}
 	
-	public boolean update(Object object) throws SQLException {
+	public boolean update(Object... object) throws SQLException {
 		return updatePack.executeUpdate(object) > 0;
 	}
 }

@@ -31,7 +31,7 @@ public class InsertTransation {
 		};
 	}
 	
-	public boolean insert(Object object) throws SQLException {
+	public boolean insert(Object... object) throws SQLException {
 		ResultSet result = insertPack.executeInsert(object);
 		if(insertUnpack == null) 
 			insertUnpack = new UnpackScheme(result.getMetaData(), columnMap);

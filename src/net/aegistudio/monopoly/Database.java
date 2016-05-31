@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import net.aegistudio.monopoly.crud.CrudStatementSet;
+import net.aegistudio.monopoly.crud.Iterator;
 
 public class Database {
 	public final Configuration config;
@@ -61,7 +62,7 @@ public class Database {
 		boolean removeTable;
 		do {
 			removeTable = false;
-			Iterator<Relation> relationIterator = pendingTable.iterator();
+			java.util.Iterator<Relation> relationIterator = pendingTable.iterator();
 			while(relationIterator.hasNext()) {
 				Relation relation = relationIterator.next();
 				if(registeredTableName.containsAll(relation.dependencies)) {
@@ -96,5 +97,16 @@ public class Database {
 	public boolean delete(Object entity) throws SQLException {
 		return this.getRelationComplete(entity, relation ->
 			relation.defaultStatements.delete.update(entity));
+	}
+	
+	public <T> void list(T entity, Consumer<T> consumer) throws SQLException {
+		this.getRelationComplete(entity, relation -> {
+			Iterator iterator = relation.defaultStatements.list.list();
+			while(iterator.next()) {
+				iterator.unpack(entity);
+				consumer.accept(entity);
+			}
+			return null;
+		});
 	}
 }

@@ -18,7 +18,7 @@ public class FindTransation {
 		findPack = new PackScheme(relation.database, query, columnMap);
 	}
 	
-	public boolean find(Object object) throws SQLException {
+	public boolean find(Object... object) throws SQLException {
 		ResultSet result = findPack.executeQuery(object);
 		if(findUnpack == null) 
 			findUnpack = new UnpackScheme(result.getMetaData(), columnMap);

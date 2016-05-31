@@ -12,7 +12,9 @@ import net.aegistudio.monopoly.query.CreateIndexQuery;
 import net.aegistudio.monopoly.query.CreateTableQuery;
 import net.aegistudio.monopoly.query.DeleteKeywordQuery;
 import net.aegistudio.monopoly.query.FindKeywordQuery;
+import net.aegistudio.monopoly.query.FindSingleQuery;
 import net.aegistudio.monopoly.query.InsertSingleQuery;
+import net.aegistudio.monopoly.query.QueryBuilder;
 import net.aegistudio.monopoly.query.UpdateKeywordQuery;
 
 /**
@@ -23,6 +25,7 @@ import net.aegistudio.monopoly.query.UpdateKeywordQuery;
 public class CrudStatementSet {
 	public final InsertTransation insert;
 	public final FindTransation find;
+	public final ListTransation list;
 	public final UpdateTransation update, delete;
 	
 	public CrudStatementSet(Relation relation, Database database) throws SQLException {
@@ -53,6 +56,7 @@ public class CrudStatementSet {
 		
 		// The find by id operation.
 		this.find = new FindTransation(relation, new FindKeywordQuery(relation).getQuery());
+		this.list = new ListTransation(relation, new FindSingleQuery(relation, QueryBuilder.ALL_COLUMN, "true").getQuery());
 		
 		// The update and delete by id operation.
 		this.update = new UpdateTransation(relation, new UpdateKeywordQuery(relation).getQuery());
