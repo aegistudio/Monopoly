@@ -1,5 +1,6 @@
 package net.aegistudio.monopoly;
 
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,7 @@ public class Relation {
 	
 	protected void translateFields() {
 		for(java.lang.reflect.Field field : objectClazz.getDeclaredFields()) {
+			if(Modifier.isStatic(field.getModifiers())) continue;
 			Column column = new Column(this, field);
 			fieldMap.put(column.getName(), column);
 			this.acceptField(column);
