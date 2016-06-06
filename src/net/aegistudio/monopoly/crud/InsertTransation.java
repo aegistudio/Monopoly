@@ -32,11 +32,18 @@ public class InsertTransation {
 	}
 	
 	public boolean insert(Object... object) throws SQLException {
-		ResultSet result = insertPack.executeInsert(object);
-		if(insertUnpack == null) 
-			insertUnpack = new UnpackScheme(result.getMetaData(), columnMap);
-		if(!result.next()) return false;
-		insertUnpack.unpack(result, object);
-		return true;
+		try {
+			ResultSet result = insertPack.executeInsert(object);
+			if(insertUnpack == null) 
+				insertUnpack = new UnpackScheme(result.getMetaData(), columnMap);
+			if(result.next());
+				insertUnpack.unpack(result, object);
+			return true;
+		}
+		catch(SQLException e) {
+			if(e.getErrorCode() == 1062)	// DUPLICATE KEY.
+				return false;
+			else throw e;
+		}
 	}
 }

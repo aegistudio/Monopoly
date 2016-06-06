@@ -99,10 +99,12 @@ public class Database {
 			relation.defaultStatements.delete.update(entity));
 	}
 	
-	public <T> void list(T entity, Consumer<T> consumer) throws SQLException {
-		this.getRelationComplete(entity, relation -> {
+	public static interface Factory<T> {	public T produce();	}
+	public <T> void list(Factory<T> factory, Consumer<T> consumer) throws SQLException {
+		this.getRelationComplete(factory.produce(), relation -> {
 			Iterator iterator = relation.defaultStatements.list.list();
 			while(iterator.next()) {
+				T entity = factory.produce();
 				iterator.unpack(entity);
 				consumer.accept(entity);
 			}
