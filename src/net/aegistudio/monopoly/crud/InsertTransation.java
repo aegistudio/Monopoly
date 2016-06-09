@@ -36,8 +36,10 @@ public class InsertTransation {
 			ResultSet result = insertPack.executeInsert(object);
 			if(insertUnpack == null) 
 				insertUnpack = new UnpackScheme(result.getMetaData(), columnMap);
-			if(result.next());
+			
+			if(result.next())
 				insertUnpack.unpack(result, object);
+			
 			return true;
 		}
 		catch(SQLException e) {
